@@ -1,0 +1,72 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* INI KUNCI AGAR PETA MUNCUL */
+html, body, #root {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+}
+
+.leaflet-container {
+    width: 100%;
+    height: 100vh; /* Paksa tinggi memenuhi layar */
+    z-index: 0;   /* Pastikan peta di bawah tombol */
+}
+
+/* Styling untuk marker lokasi saat ini */
+.start-location-marker {
+    filter: hue-rotate(0deg) saturate(2) brightness(1.2);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+/* Animasi untuk marker driver (permen) */
+@keyframes pulse-driver {
+    0%, 100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1.2);
+        opacity: 0.8;
+    }
+}
+
+.driver-location-marker {
+    z-index: 1000 !important;
+}
+
+/* Styling untuk custom labeled marker */
+.custom-labeled-marker {
+    background: transparent !important;
+    border: none !important;
+}
+
+/* Scrollbar styling untuk sidebar */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
