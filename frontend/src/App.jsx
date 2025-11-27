@@ -382,12 +382,26 @@ function App() {
       // Ambil koordinat tujuan saja
       const destinationCoords = locations.map(loc => loc.coords)
       
-      // 1. Minta urutan terbaik ke Python (ACO)
-      const acoResponse = await axios.post('http://127.0.0.1:5000/api/optimize', {
-        start_location: currentLocation,
-        locations: destinationCoords,
-        algorithm: algorithmChoice
-      })
+      // --- UPDATE PENTING DI SINI ---
+      // 1. Masukkan Link Ngrok kamu (GANTI yang di dalam tanda kutip ini)
+      const API_URL = "https://nonspatial-inflexionally-emerita.ngrok-free.dev"; 
+
+      // 2. Minta urutan terbaik ke Python (Lewat Ngrok)
+      const acoResponse = await axios.post(`${API_URL}/api/optimize`, 
+        {
+          start_location: currentLocation,
+          locations: destinationCoords,
+          algorithm: algorithmChoice
+        },
+        {
+          // 3. Header wajib agar Ngrok meloloskan data JSON
+          headers: {
+            "ngrok-skip-browser-warning": "true",
+            "Content-Type": "application/json"
+          }
+        }
+      )
+      // -----------------------------
       
       const data = acoResponse.data
       if (data.status === 'success') {
@@ -439,8 +453,12 @@ function App() {
         setCurrentDriverLocation(0)
         
         // 2. Minta bentuk jalan raya ke OSRM
-        if (optimizedPoints.length >= 2) {
-          await drawRealRoads(optimizedPoints)
+        // (Pastikan ini pakai koordinat lengkap dari Start sampai Finish)
+        const fullRouteForOSRM = [currentLocation, ...optimizedPoints];
+        
+        if (fullRouteForOSRM.length >= 2) {
+            // Note: Pastikan fungsi drawRealRoads kamu support array ini
+            await drawRealRoads(fullRouteForOSRM) 
         } else {
           setError('Algoritma tidak menghasilkan rute yang valid. Coba tambah titik lagi.')
         }
@@ -448,7 +466,7 @@ function App() {
 
     } catch (error) {
       console.error("Error:", error)
-      setError(error.response?.data?.error || "Terjadi kesalahan. Pastikan backend Python berjalan di port 5000.")
+      setError(error.response?.data?.error || "Terjadi kesalahan. Pastikan Backend Python & Ngrok berjalan.")
     }
     setLoading(false)
   }
